@@ -7,21 +7,28 @@ import copy
 #y_random = random.uniform(0, 480)
 
 class Balas:
+    #lista de todas as balas do jogo
+    lista_balas=[]
+
     def __init__(self, win, x, y):
         self.win = win
         self.x = x
         self.y = y
-
 
         self.largura = 10
         self.altura = 10
         self.cor = 'RED'
         self.rect=pygame.Rect(x,y,10,10);
 
+        #coloca a bala na lista
+        Balas.lista_balas.append(self)
+
     def draw(self):
-        self.rect=pygame.Rect(self.x,self.y,20,20);
+        self.rect.center=[self.x,self.y]
         pg.draw.rect(self.win, self.cor, self.rect)
 
+    def remover(self):
+        Balas.lista_balas.remove(self)
 
 class Player:
     def __init__(self, win, x, y, tecla_cima, tecla_baixo, tecla_esquerda, tecla_direita):
@@ -34,6 +41,7 @@ class Player:
         self.tecla_esquerda = tecla_esquerda
         self.tecla_direita = tecla_direita
         
+        self.quantidade_balas=0
         self.square = pygame.Rect(300, 230, 20, 20)
         self.largura = 20
         self.altura = 20
@@ -55,19 +63,22 @@ class Player:
             self.y += self.vel
         
     def draw(self):
-        self.rect=pygame.Rect(self.x,self.y,20,20);
+        self.rect.center=[self.x,self.y]
         pg.draw.rect(self.win, self.cor, self.rect)
-
 
 
 def main():
     screen = pg.display.set_mode((640, 480))
     clock = pg.time.Clock()
-    player = Player(screen, 320, 240, pg.K_w, pg.K_s, pg.K_a, pg.K_d)
+    player1 = Player(screen, 320, 240, pg.K_w, pg.K_s, pg.K_a, pg.K_d)
     player2 = Player(screen, 220, 140, pg.K_UP, pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT)
-    bala = Balas(screen, 100, 80)
+    
+    Balas(screen, 100, 80)
+    Balas(screen, 200, 80)
+    Balas(screen, 200, 180)
+    Balas(screen, 100, 180)
 
-    players = [player, player2]
+    players = [player1, player2]
 
     #posição do jogador no plano (x, y)
     done = False
@@ -77,24 +88,33 @@ def main():
             if event.type == pg.QUIT:
                 done = True
         
-        player.control()
+        player1.control()
         player2.control()
 
         screen.fill((40, 40, 40))
-        player.draw()
+
+        player1.draw()
         player2.draw()
-        bala.draw()
+
+        #desenha todas as balas da lista
+        for bala in Balas.lista_balas:
+            bala.draw()
 
         pg.display.flip()
         clock.tick(30)
 
-        
-        if player.rect.colliderect(bala):
-            print('player 1 morrestes')
-        if player2.rect.colliderect(bala):
-            print('player 2 morrestes')
-        if player2.rect.colliderect(player):
-            print('oi')
+        #para cada bala na lista checa a colisão
+        for bala in Balas.lista_balas:
+            if bala.rect.colliderect(player1):
+                player1.quantidade_balas+=1
+                bala.remover()
+                print(f"player1 tem {player1.quantidade_balas} balas")
+
+            if bala.rect.colliderect(player2):
+                player2.quantidade_balas+=1
+                bala.remover()
+                print(f"player2 tem {player2.quantidade_balas} balas")
+
 
 if __name__ == '__main__':
     pg.init()
