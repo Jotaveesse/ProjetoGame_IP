@@ -12,12 +12,15 @@ class Balas:
         self.x = x
         self.y = y
 
+
         self.largura = 10
         self.altura = 10
         self.cor = 'RED'
+        self.rect=pygame.Rect(x,y,10,10);
 
     def draw(self):
-        pg.draw.rect(self.win, self.cor, (self.x, self.y, self.largura, self.altura))
+        self.rect=pygame.Rect(self.x,self.y,20,20);
+        pg.draw.rect(self.win, self.cor, self.rect)
 
 
 class Player:
@@ -36,6 +39,7 @@ class Player:
         self.altura = 20
         self.vel = 10
         self.cor = 'WHITE'
+        self.rect=pygame.Rect(x,y,20,20);
 
     
     def control(self):
@@ -51,7 +55,8 @@ class Player:
             self.y += self.vel
         
     def draw(self):
-        pg.draw.rect(self.win, self.cor, (self.x, self.y, self.largura, self.altura))
+        self.rect=pygame.Rect(self.x,self.y,20,20);
+        pg.draw.rect(self.win, self.cor, self.rect)
 
 
 
@@ -84,10 +89,12 @@ def main():
         clock.tick(30)
 
         
-        #if player.collidrect(bala):
-        #    print('oi')
-        #if player2.colliderect(player):
-        #    print('oi')
+        if player.rect.colliderect(bala):
+            print('player 1 morrestes')
+        if player2.rect.colliderect(bala):
+            print('player 2 morrestes')
+        if player2.rect.colliderect(player):
+            print('oi')
 
 if __name__ == '__main__':
     pg.init()
